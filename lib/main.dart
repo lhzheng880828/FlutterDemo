@@ -1,4 +1,14 @@
 import 'package:flutter/material.dart';
+
+import 'echo_client.dart';
+import 'echo_server.dart';
+import 'message.dart';
+import 'flutter_widgets.dart';
+
+
+HttpEchoServer _server;
+HttpEchoClient _client;
+
 //flutter入口，创建一个MyApp
 void main() => runApp(MyApp());
 
@@ -27,9 +37,22 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         primarySwatch: Colors.blue,
+        brightness: Brightness.light,
+        primaryColor: Colors.deepOrange,
+        accentColor: Colors.orange[600],
+
       ),
       // 应用的“主页”
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      //home: MyHomePage(title: 'Flutter Demo Home Page'),
+      //home: MessageListScreen(),
+      //home: ImageDemo(),//test for imageview
+      //home:ContainerDemo(),//test for textView
+      //home: RaiseBtnApp(),
+      //home: new BaseListView(),
+      //home: new HorizontalList(),
+      //home: new LoginWidget(),
+      home: new GridList(),
+      //home: new LongList(items: new List.generate(500, (index) => 'Item$index')),
     );
   }
 }
@@ -83,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
+  child: Column(
           // Column is also layout widget. It takes a list of children and
           // arranges them vertically. By default, it sizes itself to fit its
           // children horizontally, and tries to be as tall as its parent.
@@ -114,6 +137,26 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
 
+
+      /*  child:Container(
+        width:200.0,
+        height:200.0,
+      decoration:BoxDecoration(
+      color: Colors.white,
+      border: new Border.all(
+      color: Colors.grey,
+      width: 8.0,
+      ),
+      borderRadius:
+      const BorderRadius.all(const Radius.circular(9.0)),
+      ),
+      child: Text(
+      'Flutterxxx',
+      textAlign: TextAlign.center,
+      style: TextStyle(fontSize: 28.0),
+      )
+    ),
+*/
 
       ),
       floatingActionButton: FloatingActionButton(
@@ -160,5 +203,264 @@ class _RollingState extends State<RollingButton> {
 
 }
 
+class MessageList extends StatefulWidget {
+
+  MessageList({Key key}): super(key: key);
+
+  @override
+  State createState() {
+    return _MessageListState();
+  }
+}
+
+class _MessageListState extends State<MessageList> with WidgetsBindingObserver {
+  final List<Message> messages = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    const port = 6060;
+    _server = HttpEchoServer(port);
+    // initState 不是一个 async 函数，这里我们不能直接 await _server.start(),
+    // future.then(...) 跟 await 是等价的
+    _server.start().then((_) {
+      // 等服务器启动后才创建客户端
+      _client = HttpEchoClient(port);
+      _client.getHistory().then((list) {
+        setState(() {
+          messages.addAll(list);
+        });
+      });
+      WidgetsBinding.instance.addObserver(this);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        itemCount: messages.length,
+        itemBuilder: (context, index) {
+          final msg = messages[index];
+          final subtitle = DateTime.fromMillisecondsSinceEpoch(msg.timestamp)
+              .toLocal().toIso8601String();
+          return ListTile(
+            title: Text(msg.msg),
+            subtitle: Text(subtitle),
+          );
+        }
+    );
+  }
+
+  void addMessage(Message msg) {
+    setState(() {
+      messages.add(msg);
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      var server = _server;
+      _server = null;
+      server?.close();
+    }
+  }
+}
 
 
+class MessageListScreen extends StatelessWidget {
+
+  final messageListKey = GlobalKey<_MessageListState>(debugLabel: 'messageListKey');
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Echo client'),
+        ),
+        body: MessageList(key: messageListKey),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            // push 一个新的 route 到 Navigator 管理的栈中，以此来打开一个页面
+            // Navigator.push 会返回一个 Future<T>，如果你对这里使用的 await
+            // 不太熟悉，可以参考
+            // https://www.dartlang.org/guides/language/language-tour#asynchrony-support
+            final result = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => AddMessageScreen())
+            );
+            if (_client == null) return;
+            // 现在，我们不是直接构造一个 Message，而是通过 _client 把消息
+            // 发送给服务器
+            var msg = await _client.send(result);
+            if (msg != null) {
+              messageListKey.currentState.addMessage(msg);
+            } else {
+              debugPrint('fail to send $result');
+            }
+          },
+          tooltip: 'Add message',
+          child: Icon(Icons.add),
+        )
+    );
+  }
+}
+
+
+class MessageForm extends StatefulWidget {
+
+  @override
+  State createState() {
+    return _MessageFormState();
+  }
+
+}
+
+class _MessageFormState extends State<MessageForm> {
+  final editController = TextEditingController();
+
+  // 对象被从 widget 树里永久移除的时候调用 dispose 方法（可以理解为对象要销毁了）
+  // 这里我们需要主动再调用 editController.dispose() 以释放资源
+  @override
+  void dispose() {
+    super.dispose();
+    editController.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      // 我们让输入框占满一行里除按钮外的所有空间
+      padding: EdgeInsets.all(16.0),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Container(
+              margin: EdgeInsets.only(right: 8.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Input message',
+                  contentPadding: EdgeInsets.all(0.0),
+                ),
+                style: TextStyle(
+                    fontSize: 22.0,
+                    color: Colors.black54
+                ),
+                // 获取文本的关键，这里要设置一个 controller
+                controller: editController,
+                autofocus: true,
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              debugPrint('send: ${editController.text}');
+              Navigator.pop(context, editController.text);
+            },
+            onDoubleTap: () => debugPrint('double tapped'),
+            onLongPress: () => debugPrint('long pressed'),
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+              decoration: BoxDecoration(
+                  color: Colors.black12,
+                  borderRadius: BorderRadius.circular(5.0)
+              ),
+              child: Text('Send'),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+
+class AddMessageScreen extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add message'),
+      ),
+      body: MessageForm(),
+    );
+  }
+
+}
+
+class ImageDemo extends StatelessWidget{
+
+
+  @override
+  Widget build(BuildContext context) {
+
+    return new Center(child: new Image.network('https://cdn.jsdelivr.net/gh/flutterchina/website@1.0/images/intellij/hot-reload.gif',
+    fit: BoxFit.fitWidth,
+    ));
+  }
+}
+
+class ContainerDemo extends StatelessWidget{
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('文本组件'),
+      ),
+      body: new Column(
+        children: <Widget>[
+          new Text('红色+黑色删除线+25号字体',
+          style: new TextStyle(
+              color: const Color(0xfff000),
+          decoration: TextDecoration.lineThrough,
+          decorationColor: const Color(0xff000000),
+          fontSize: 25.0,
+          ),
+          ),
+          new Text('橙色+下划线+24号字体',
+            style: new TextStyle(
+              color: const Color(0xffff9900),
+              decoration: TextDecoration.underline,
+              fontSize: 24.0,
+            ),
+          ),
+          new Text('虚线上划线+23号+斜体',
+            style: new TextStyle(
+              color: const Color(0xffff9900),
+              decoration: TextDecoration.overline,
+              decorationStyle: TextDecorationStyle.dashed,
+              fontSize: 23.0,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+          new Text('24号+加粗',
+            style: new TextStyle(
+              color: const Color(0xffff9900),
+              fontWeight: FontWeight.bold,
+              fontSize: 23.0,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class LayoutDemo extends StatelessWidget{
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(appBar: new AppBar(
+      title: new Text('图标组件示例'),
+    ),
+    body: new Icon(Icons.phone,
+    color: Colors.green[500],
+        size: 80.0,),
+    );
+  }
+}
