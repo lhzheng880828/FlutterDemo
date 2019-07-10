@@ -11,6 +11,9 @@ HttpEchoClient _client;
 
 //flutter入口，创建一个MyApp
 void main() => runApp(MyApp());
+//测试导航
+//void main() => runApp(RouteWidget());
+
 
 /// 这个 widget 作用这个应用的顶层 widget.
 ///
