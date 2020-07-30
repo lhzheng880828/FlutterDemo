@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:flutter_app/utils/common_utils.dart';
+
 //3.2 变量和基本数据类型
 void basicDataTypeTest(){
   var name = '小张';
@@ -512,7 +515,7 @@ void testOperator(){
   //a is T;
 }
 
-//3.5 控制流语句（略）
+//3.5 控制流语句
 //控制流语句和其他语言类似
 /*
 你可以通过下面任意一种方式来控制 Dart 程序流程：
@@ -531,23 +534,52 @@ assert
 
 使用 try-catch 和 throw 也可以改变程序流程， 详见 Exceptions。
 */
+//if和else
+void testIfElse(){
+  String today = 'Monday';
+  if(today == 'Monday'){
+    print('今天星期一');
+  }else if(today == 'Tuesday'){
+    print('今天星期二');
+  } else {
+    print('今天是个好日子');
+
+  }
+}
+
+//while和do-while
+void testDoWhile(){
+  var _temp = 0;
+  while(_temp < 5){
+    print("这是一个while循环:"+(_temp).toString());
+    _temp++;
+  }
+
+  var _temp2 = 0;
+  do{
+    print("这是一个循环: "+(_temp2).toString());
+    _temp2++;
+  }while(_temp2<5);
+}
 
 //for 循环
 //进行迭代操作，可以使用标准 for 语句。 例如：
-
-/*var message = StringBuffer('Dart is fun');
-for (var i = 0; i < 5; i++) {
-message.write('!');
+void testFor(){
+  var message = StringBuffer('Dart is fun');
+  for (var i = 0; i < 5; i++) {
+    message.write('!');
+  }
 }
-*/
+
 //闭包在 Dart 的 for 循环中会捕获循环的 index 索引值， 来避免 JavaScript 中常见的陷阱。 请思考示例代码：
-
-/*var callbacks = [];
-for (var i = 0; i < 2; i++) {
-callbacks.add(() => print(i));
+void testClosure(){
+  var callbacks = [];
+  for (var i = 0; i < 2; i++) {
+  callbacks.add(() => print(i));
+  }
+  callbacks.forEach((c) => c());
 }
-callbacks.forEach((c) => c());
-*/
+
 //和期望一样，输出的是 0 和 1。 但是示例中的代码在 JavaScript 中会连续输出两个 2 。
 
 //I如果要迭代一个实现了 Iterable 接口的对象， 可以使用 forEach() 方法， 如果不需要使用当前计数值， 使用 forEach() 是非常棒的选择；
@@ -556,11 +588,454 @@ candidates.forEach((candidate) => candidate.interview());
 */
 
 //实现了 Iterable 的类（比如， List 和 Set）同样也支持使用 for-in 进行迭代操作 iteration ：
-
-/*
-var collection = [0, 1, 2];
-for (var x in collection) {
-print(x); // 0 1 2
+void testForIn(){
+  var collection = [0, 1, 2];
+  for (var x in collection) {
+    print('testForIn, '+x.toString()); // 0 1 2
+  }
 }
-*/
+
+//break和continue
+void testBreakContinue(){
+  var arr = [0, 1, 2, 3, 4, 5, 6];
+  for(var v in arr){
+    if(v == 2){
+      break;
+    }
+    print('arr, '+v.toString());
+  }
+
+  print('\n');
+
+  var arr2 = [0, 1, 2, 3, 4, 5, 6];
+  for(var v in arr2){
+    if(v == 2){
+      continue;
+    }
+    print('arr2, '+v.toString());
+  }
+}
+
+//switch和case
+void testSwitchCase(){
+  String today = 'Monday';
+  switch (today) {
+    case 'Monday':
+      print('星期一');
+      break;
+    case 'Tuesday':
+      print('星期二');
+      break;
+  }
+}
+
+//assert
+void testAssert(){
+  String text = 'abc';
+  assert(text!=null);
+}
+
+//3.6 异常处理
+void testExceptionHandle(){
+
+  try {
+    throw FormatException('抛出一个FormatExcetpion异常');
+    //throw '参数非法';
+  } on Exception catch (e) {
+    print('Exception details:\n $e');
+  } catch(e, s){
+    print('Stack trace:\n $s');
+  }
+  finally {
+    print('do something in finally');
+
+  }
+}
+
+//3.7 面向对象编程
+class User {
+  String name;
+  int age;
+
+  /* 构造方法1
+  User(){
+    this.name = 'def name';
+    this.age = 0;
+  }*/
+
+  /*构造方法2
+  User(String name, int age){
+    this.name = name;
+    this.age = age;
+  }*/
+
+  /*构造方法3
+  User.fromJson(Map json){
+    name = json['name'];
+    age = json['age'];
+  }*/
+
+  //构造方法4
+  //User(this.name, this.age);
+
+  //构造方法5
+  //User(name, age): name=name, age = age;
+
+  @override
+  String toString() {
+    return 'name = $name'+', age = $age';
+  }
+}
+
+void userTest(){
+  var user = User();
+  user.name = '张三';
+  user.age = 20;
+  print('user info = $user');
+}
+
+//3.7.3 读取和写入对象
+class Rectangle {
+  num _left;
+  num _top;
+  num _width;
+  num _height;
+
+  Rectangle(num left, num top, num width, num height){
+    this._left = left;
+    this._top = top;
+    this._width = width;
+    this._height = height;
+  }
+
+  num get height => _height;
+
+  set height(num value) {
+    _height = value;
+  }
+
+  num get width => _width;
+
+  set width(num value) {
+    _width = value;
+  }
+
+  num get top => _top;
+
+  set top(num value) {
+    _top = value;
+  }
+
+  num get left => _left;
+
+  set left(num value) {
+    _left = value;
+  }
+
+  num get right => _left+width;
+
+  set right(num value) => left = value - _width;
+
+  num get bottom => _top+height;
+
+  set bottom(num value) => top = value - _height;
+}
+
+void testObjReadAndWrite(){
+
+   var rect = Rectangle(3, 4, 20, 15);
+   print('left:'+rect.left.toString());
+   print('right:'+rect.right.toString());
+
+   rect.right = 30;
+   print('更改right值为30');
+   print('left:'+rect.left.toString());
+   print('right:'+rect.right.toString());
+
+   print('top:'+rect.top.toString());
+   print('bottom:'+rect.bottom.toString());
+
+   rect.bottom = 50;
+   print('更改bottom为50');
+   print('top:'+rect.top.toString());
+   print('bottom:'+rect.bottom.toString());
+}
+
+//3.7.4 重载overload
+
+class Vector{
+  final int x;
+  final int y;
+
+  const Vector(this.x, this.y);
+
+  Vector operator +(Vector v){
+    return new Vector(x+v.x, y+v.y);
+  }
+
+  Vector operator -(Vector v){
+    return new Vector(x-v.x, y-v.y);
+  }
+}
+
+
+void overloadTest(){
+  final v = new Vector(2, 3);
+  final w = new Vector(2, 2);
+  final r1 = v + w;
+  print('r1.x='+r1.x.toString()+' r1.y='+r1.y.toString());
+  final r2 = v - w;
+  print('r2.x='+r2.x.toString()+' r2.y='+r2.y.toString());
+
+}
+//3.7.5  继承类
+class Animal {
+
+  void eat(){
+    print('动物会吃');
+  }
+
+  void run(){
+    print('动物会跑');
+  }
+}
+
+class Human extends Animal {
+
+  @override
+  void eat() {
+    print('人会吃');
+  }
+
+  @override
+  void run() {
+    print('人会跑');
+  }
+
+  void say(){
+    print('人会说');
+  }
+
+  void study(){
+    print('人会学习');
+  }
+
+
+}
+
+void extendsTest(){
+  print('实例化一个动物');
+  var animal = Animal();
+  animal.eat();
+  animal.run();
+
+  print('实例化一个人');
+  var human = Human();
+  human.eat();
+  human.run();
+  human.say();
+  human.study();
+}
+
+//3.7.6  抽象类
+abstract class DateBaseOperate {
+  void insert();
+  void delete();
+  void update();
+  void query();
+}
+
+class DateBaseOPerateImpl extends DateBaseOperate {
+
+  @override
+  void insert() {
+
+    print('实现了插入方法');
+  }
+
+  @override
+  void query() {
+    print('实现了查询方法');
+
+  }
+
+  @override
+  void update() {
+    print('实现了更新方法');
+
+  }
+
+  @override
+  void delete() {
+    print('实现了删除方法');
+  }
+}
+
+void testAbstract(){
+  var db = DateBaseOPerateImpl();
+  db.insert();
+  db.query();
+  db.update();
+  db.delete();
+}
+
+//3.7.7  枚举类型
+
+enum Color {
+  red,
+  green,
+  blue
+}
+
+void testEnum(){
+  List<Color> colors = Color.values;
+
+  //定义一个颜色常量,默认值为蓝色
+  Color acolor = Color.red;
+  switch (acolor){
+    case Color.red:
+      print('红色');
+      break;
+    case Color.blue:
+      print('蓝色');
+      break;
+    case Color.green:
+      print('绿色');
+      break;
+    default:
+      print(acolor);
+  }
+}
+
+//3.7.8  Mixins 多继承
+class S {
+  a() {
+    print('S.a');
+  }
+}
+
+class A1 {
+  a() {
+    print('A.a');
+  }
+
+  b(){
+    print('A.b');
+  }
+}
+
+class T = A1 with S;
+
+void mixinsTest(){
+  T t = T();
+  t.a();
+  t.b();
+}
+
+//3.8 泛型
+
+void genericTest(){
+  //1.list<String>
+  var names = new List<String>();
+  names.addAll(['张三','李四','王五']);
+  //2.泛型用于List和Map类型参数化, List:<type>  ,  Map: <keyType, valueType>
+
+  var nameList = <String>['张三','李四','王五'];
+  var weekMap = <String, String> {
+    'Monday': '星期一',
+    'Tuesday': '星期二',
+    'Wednesday': '星期三',
+  };
+
+  var user = new Map<String, User>();
+}
+
+//3.9引用库
+void testImport(){
+  //import 'dart:io';  //导入dart语言提供的lib
+  //import 'package: mylib/mylib.dart'; //导入第三方库文件使用package:xx
+  //import 'package:utils/utils.dart';
+
+  //当两个库中包含了相同的类时,需要指定不一样的前缀
+  //import 'package:lib1/lib1.dart'
+  //import 'package:lib2/lib2.dart' as lib2;
+  //Element elment1 = new Element(); //使用lib1中的Element
+  //lib2.Element element2 = new lib2.Element(); //使用lib2中的Element
+
+  //引用部分内容
+  //import 'package:lib1/lib1.dart' show foo;
+  //排除部分内容
+  //import 'package:lib2/lib2.dart' hide foo;
+
+  var utils = Utils();
+  utils.callUtil();
+}
+
+
+//3.10 异步支持
+//dart主要通过async和await实现异步操作
+
+ void asynctest () async {
+  //var file = await readFile();
+}
+
+//3.11元数据
+//dart中元数据是以@开始的修饰符, dart提供三个@修饰符
+//@deprecated被弃用
+//@override重写
+//@proxy代理
+
+//override参考前面Animain和Human的例子
+
+//元数据可以修饰library, class, typedef, type parameter, constructor, factory, function, field
+//parameter, variable declaration
+
+//3.12注释
+//dart支持三种注释类型, 单行注释\多行注释\文档注释
+
+//单行注释
+
+
+/*多行注释
+多行注释
+多行注释*/
+
+///文档注释单行
+
+/**
+    文档注释多行
+    文档注释多行
+ *
+ */
+
+
+
+void main(){
+  //testClosure();
+  //testForIn();
+  //testDoWhile();
+  //testBreakContinue();
+
+  //testSwitchCase();
+  //testAssert();
+
+  //testExceptionHandle();
+
+  //userTest();
+
+  //testObjReadAndWrite();
+
+  //overloadTest();
+
+  //extendsTest();
+
+  //testAbstract();
+
+  //mixinsTest();
+
+  testImport();
+
+
+}
+
 

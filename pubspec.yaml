@@ -27,6 +27,9 @@ dependencies:
   http: ^0.11.3+17
   # sqlite lib
   sqflite: any
+  #webview
+  flutter_webview_plugin: "^0.3.11"
+  date_format: "^1.0.8"
 
 dev_dependencies:
   flutter_test:
@@ -45,9 +48,13 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #  - images/a_dot_burr.jpeg
-  #  - images/a_dot_ham.jpeg
+  assets:
+    - images/1.png
+    - images/2.png
+    - images/3.png
+    - images/4.png
+    - images/code.png
+    - images/wudang.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.

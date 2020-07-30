@@ -100,7 +100,7 @@ class HttpEchoServer {
 
     // 获取从客户端 post 请求的 body，更多的知识，参考
     // https://www.dartlang.org/tutorials/dart-vm/httpserver
-    String body = await request.transform(utf8.decoder).join();
+    String body = await request.join();
     if (body != null) {
       var message = Message.create(body);
       messages.add(message);

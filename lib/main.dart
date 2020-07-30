@@ -1,19 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/im/ImApp.dart';
 
 import 'echo_client.dart';
 import 'echo_server.dart';
 import 'message.dart';
 import 'flutter_widgets.dart';
+import 'cupertino_widgets.dart';
+import 'page_layout_demo.dart';
+import 'component_nav.dart';
 
 
 HttpEchoServer _server;
 HttpEchoClient _client;
 
 //flutter入口，创建一个MyApp
-void main() => runApp(MyApp());
+//void main() => runApp(MyApp());
 //测试导航
 //void main() => runApp(RouteWidget());
-
+//void main() => runApp(FloatingButton());
+//void main() => runApp(PopMenuDemo());
+//void main() => runApp(SimpleDialogDemo());
+//void main() => runApp(AlertDialogDemo());
+//Im应用入口
+void main() => runApp(ImApp());
 
 /// 这个 widget 作用这个应用的顶层 widget.
 ///
@@ -54,8 +63,57 @@ class MyApp extends StatelessWidget {
       //home: new BaseListView(),
       //home: new HorizontalList(),
       //home: new LoginWidget(),
-      home: new GridList(),
+      //home: new GridList(),
       //home: new LongList(items: new List.generate(500, (index) => 'Item$index')),
+      //home: new MyBaseListView(),
+      //home: new HorizontalListView(),
+      //home: new RouteWidget(),
+      //home: new AppBarLayoutDemo(),
+      //home: new BottomNavBarDemo(),
+      //home: new TabBarDemo(),
+      //home: new DrawerLayoutDemo(),
+      //home: TextFiledDemo(),
+      //home: CardViewDemo(),
+      //home: CupertinoActIndicatorDemo(),
+      //home: CupertinoAlertDialogDemo(),
+      //home: CupertinoButtonDemo(),
+      //home: CupertinoNavDemo(),
+      //home: ContainerLayoutDemo(),
+      //home: CenterLayoutDemo(),
+      //home: PaddingLayoutDemo(),
+      //home: AlignLayoutDemo(),
+      //home: RowLayoutDemo(),
+      //home: ColumnLayoutDemo(),
+      //home: ColumnLayoutDemo2(),
+      //home: FittedBoxDemo(),
+      //home: StackAlignmentLayoutDemo(),
+      //home: StackPositionedDemo(),
+      //home: IndexedStackLayoutDemo(),
+      //home: OverflowBoxLayoutDemo(),
+      //home: SizedBoxLayoutDemo(),
+      //home: ConstrainedBoxDemo(),
+      //home: LimitedBoxLayoutDemo(),
+      //home: AspectRatioDemo(),
+      //home: FractionallySizedBoxDemo(),
+      //home: TableLayoutDemo(),
+      //home: TransformDemo(),
+      //home: BaselineDemo(),
+      //home: OffstageDemo(title: "OffstageDemo",),
+      //home: WrapLayoutDemo(),
+      //home: WudangDetailDemo(),
+      //home: GestureDetectorDemo(),
+      //home: DismissibleDemo(),
+      //home: FirstScreen(),
+      //home: ProductList(products: List.generate(20, (index) => Product('商品$index', '这是一个商品详情$index'))),
+      //home: FirstPageNav(),
+      //home: OpacityDemo(),
+      //home: DecoratedBoxDemo(),
+      //home: LinearGradientDemo(),
+      //home: RadialGradientDemo(),
+      //home: RotatedBoxDemo(),
+      //home: ClipOvalDemo(),
+      //home: ClipRRectDemo(),
+      home: HeroFirstPage(),
     );
   }
 }
@@ -160,7 +218,6 @@ class _MyHomePageState extends State<MyHomePage> {
       )
     ),
 */
-
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
@@ -169,8 +226,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-
-
 
 }
 
@@ -466,4 +521,158 @@ class LayoutDemo extends StatelessWidget{
         size: 80.0,),
     );
   }
+}
+
+class LayoutDemo2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('图标按钮组件示例'),
+      ),
+      body: new Center(
+        child: new IconButton(icon: new Icon(Icons.volume_up, size: 48.0,), tooltip: '按下操作', onPressed: (){
+          print('按下操作');
+        }),
+      ),
+    );
+  }
+}
+
+class MyBaseListView extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('列表组件示例列表组件22'),
+      ),
+      body: new ListView(children: <Widget>[
+        ListTile(
+          leading: Icon(Icons.phone),
+          title: Text('Phone'),),
+        ListTile(
+          leading: Icon(Icons.phone),
+          title: Text('Phone'),),
+        ListTile(
+          leading: Icon(Icons.alarm),
+          title: Text('Alarm'),),
+        ListTile(
+          leading: Icon(Icons.alarm),
+          title: Text('Alarm'),),
+        ListTile(
+          leading: Icon(Icons.alarm),
+          title: Text('Alarm'),),
+        ListTile(
+          leading: Icon(Icons.alarm),
+          title: Text('Alarm'),),
+        ListTile(
+          leading: Icon(Icons.airplay),
+          title: Text('Airplay'),),
+        ListTile(
+          leading: Icon(Icons.airplay),
+          title: Text('Airplay'),),
+        ListTile(
+          leading: Icon(Icons.airplay),
+          title: Text('Airplay'),),
+        ListTile(
+          leading: Icon(Icons.airplay),
+          title: Text('Airplay'),),
+      ],),
+    );
+  }
+}
+
+class HorizontalListView extends StatelessWidget {
+
+
+  @override
+  Widget build(BuildContext context) {
+    final title = '水平列表组件';
+    return new Scaffold(
+        appBar: new AppBar(
+        title: new Text('列表组件示例列表组件22'),
+    ),
+    body: Container(
+    margin: EdgeInsets.symmetric(vertical: 20.0),
+    height: 200.0,
+    child: ListView(
+    scrollDirection: Axis.horizontal,
+    children: <Widget>[
+      Container(
+      width: 160.0,
+      color: Colors.lightBlue,
+    ),
+    Container(
+    width: 160.0,
+    color: Colors.amber,
+    ),
+    Container(
+    width: 160.0,
+    color: Colors.deepOrange,
+    ),
+    Container(
+    width: 160.0,
+    color: Colors.green,
+      child: Column(
+        children: <Widget>[
+          Text(
+              '水平',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 36.0,
+            ),
+          ),
+          Text(
+            '列表',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 36.0,
+            ),
+          ),
+          Text(
+            '水平',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 36.0,
+            ),
+          ),
+        ],
+      ),
+
+    ),
+      Container(
+        width: 160.0,
+        color: Colors.pinkAccent,
+      ),
+      Container(
+        width: 160.0,
+        color: Colors.black,
+      ),
+      Container(
+        width: 160.0,
+        color: Colors.yellow,
+      ),
+      Container(
+        width: 160.0,
+        color: Colors.greenAccent,
+      ),
+      Container(
+        width: 160.0,
+        color: Colors.grey,
+      ),
+      Container(
+        width: 160.0,
+        color: Colors.blueGrey,
+      ),
+      Container(
+        width: 160.0,
+        color: Colors.black,
+      ),
+    ],
+    ),
+    ),
+    );
+    }
 }
